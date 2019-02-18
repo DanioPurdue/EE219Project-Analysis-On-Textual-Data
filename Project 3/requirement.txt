@@ -3,3 +3,4 @@ random
 sklearn
 pandas
 scikit-surprise
+matplotlib
