@@ -2,5 +2,6 @@ numpy
 random
 sklearn
 pandas
-scikit-surprise
 matplotlib
+sklearn-surprise
+statsmodel
