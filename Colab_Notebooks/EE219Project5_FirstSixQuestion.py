@@ -5,6 +5,7 @@ import json
 import datetime
 from datetime import timedelta
 import matplotlib.pyplot as plt
+import matplotlib
 import pytz
 import random
 import dateutil.parser
@@ -20,6 +21,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import KFold
 
+# matplotlib.use('TKAgg')
 file_direct = "ECE219_tweet_data_updated/"
 filename = "updated_tweets_#gopatriots.txt"
 f_cnt = 1
