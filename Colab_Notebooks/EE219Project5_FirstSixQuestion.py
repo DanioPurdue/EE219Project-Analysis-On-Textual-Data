@@ -268,9 +268,9 @@ def drawScatterPlots(feature_value, predicted_Y, message):
     f_cnt = f_cnt + 1
 
 
-drawScatterPlots(train_labels_pair["features"][:,4], pred_value, "Question 5: feature 1")
-drawScatterPlots(train_labels_pair["features"][:,6], pred_value, "Question 5: feature 2")
-drawScatterPlots(train_labels_pair["features"][:,7], pred_value, "Question 5: feature 3")
+drawScatterPlots(train_labels_pair["features"][:,4], pred_value, "Question 5: feature 1 " + filename)
+drawScatterPlots(train_labels_pair["features"][:,6], pred_value, "Question 5: feature 2 " + filename)
+drawScatterPlots(train_labels_pair["features"][:,7], pred_value, "Question 5: feature 3 " + filename)
 
 print ("================================  Question 6  ==========================")
 def createTime(year, month, date, hour, minute=0, second=0):
