@@ -84,7 +84,7 @@ stat_res = getStat(json_objects, hr2cnt)
 print("Question 1 stat res: ", stat_res)
 
 # ## Question 2
-print ("================================  Question 2  ==========================")
+print ("================================  Question 2  ============================")
 json_objects = getJsonObjects(filename)
 hr2cnt_patriots = dict()
 superbowl_stat = getStat(json_objects, hr2cnt_patriots)
@@ -379,17 +379,9 @@ parsed_features_first_period = featureExtractionCustomized(first_period_json)
 train_labels_pair_first_period = convertDictToNumpy(parsed_features_first_period, feature_list_updated)
 pred_value_first_period = trainAndEvaluate(train_labels_pair_first_period,feature_list_updated)
 
-
-# In[66]:
-
-
 parsed_features_second_period = featureExtractionCustomizedFiveMinutes(second_period_json)
 train_labels_pair_second_period = convertDictToNumpy(parsed_features_second_period, feature_list_updated)
 pred_value_second_period = trainAndEvaluate(train_labels_pair_second_period,feature_list_updated)
-
-
-# In[67]:
-
 
 parsed_features_third_period = featureExtractionCustomized(third_period_json)
 train_labels_pair_third_period = convertDictToNumpy(parsed_features_third_period, feature_list_updated)
