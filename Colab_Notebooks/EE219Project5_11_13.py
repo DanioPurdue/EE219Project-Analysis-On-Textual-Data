@@ -19,6 +19,7 @@ import statsmodels.api as sm
 # Question 8
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import KFold
 
 # matplotlib.use('TKAgg')
@@ -125,12 +126,27 @@ feature_list_updated = ['hr_of_day', 'max_followers',
                         'user_mentioned_cnt', 'url_cnt',
                         'num_tweets' ,'next_num_tweets']
 train_labels_pair = convertDictToNumpy(parsed_features, feature_list_updated)
-clf = RandomForestRegressor()
 parameters = {'max_depth': [10, 20, 40, 60, 80, 100, 200, None], 
  'max_features': ['auto', 'sqrt'], 
  'min_samples_leaf': [1, 2, 4], 
  'min_samples_split': [2, 5, 10], 
  'n_estimators': [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]}
+
+print ("--------------Random Forest Regressor------------")
+clf = RandomForestRegressor()
+grid_search_clf = GridSearchCV(clf, param_grid=parameters, cv=KFold(5, shuffle=True), scoring='neg_mean_squared_error', n_jobs=4)
+x_train = np.squeeze(sm.add_constant(train_labels_pair["features"]))
+y_train = np.squeeze(train_labels_pair["labels"])
+print ("Doing Grid Search.... ")
+grid_search_clf.fit(x_train, y_train)
+print ("Done Grid Search!")
+print ("Best Parameters: ", grid_search_clf.best_params_)
+y_true, y_pred = y_train, grid_search_clf.predict(x_train)
+print("Mean squared error: %.2f" % mean_squared_error(y_true, y_pred))
+print("R2_score: %.2f" % r2_score(y_true, y_pred))
+
+print ("--------------Gradient Boost Regressor------------")
+clf = GradientBoostingRegressor()
 grid_search_clf = GridSearchCV(clf, param_grid=parameters, cv=KFold(5, shuffle=True), scoring='neg_mean_squared_error', n_jobs=4)
 x_train = np.squeeze(sm.add_constant(train_labels_pair["features"]))
 y_train = np.squeeze(train_labels_pair["labels"])
