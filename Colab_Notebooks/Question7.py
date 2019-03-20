@@ -183,6 +183,70 @@ feature_list_updated = ['hr_of_day', 'max_followers',
                         'user_mentioned_cnt', 'url_cnt',
                         'num_tweets' ,'next_num_tweets']
 print ("================================ Evaluation on the Aggregated Data ==========================")
+def getStat(json_objects, hr2cnt):
+    # Description:
+    # Get the the number of tweets, also features forom the tweet
+    list_cnt = 0
+    total_followers = 0
+    total_tweets = 0
+    time_zone = pytz.timezone('America/Los_Angeles')
+    for i in range(len(json_objects)):
+    # parse the avg tweet per hour
+        parsed_time = creationTimeParser(json_objects[i]['citation_date'],  time_zone)
+        if parsed_time in hr2cnt:
+          hr2cnt[parsed_time] += 1
+        else:
+          hr2cnt[parsed_time] = 1
+        total_followers += json_objects[i]['followers']
+        total_tweets += json_objects[i]['total_citations']
+    min_time = min(hr2cnt.keys())
+    max_time = max(hr2cnt.keys())
+    hour_time = min_time + timedelta(hours=1)
+    while hour_time < max_time:
+        if hour_time not in hr2cnt:
+            hr2cnt[hour_time] = 0
+        hour_time = hour_time + timedelta(hours=1)
+    hr_np = np.fromiter(hr2cnt.values(), dtype=np.int).reshape((len(hr2cnt),1))
+    min_time = min(hr2cnt.keys())
+    max_time = max(hr2cnt.keys())
+    diff_time = max_time - min_time + timedelta(hours=1)
+    avg_tweets = hr_np.sum() / (diff_time.total_seconds()/3600)
+    return {'avg tweets per hour' : avg_tweets, 
+          'avg followers per tweet' : total_followers / len(json_objects),
+          'avg retweets per tweet' : total_tweets / len(json_objects)}
+
+hr2cnt = dict()
+stat_res = getStat(json_objects, hr2cnt)
+print("Question 1 stat res: ", stat_res)
+
+# ## Question 2
+print ("================================  Question 2  ============================")
+def getTweetCount(json_objects):
+    hr2cnt = dict()
+    stat = getStat(json_objects, hr2cnt)
+    return hr2cnt
+    
+def getSortedKeys(hr2cnt):
+    keylist = sorted(hr2cnt.keys())
+    return keylist
+
+def generatePlot(hr2cnt, filename):
+    global f_cnt
+    sorted_time = getSortedKeys(hr2cnt)
+    sorted_vals = [hr2cnt[x] for x in sorted_time]
+    plt.plot(sorted_time, sorted_vals)
+    print("sorted_vals: ", len(sorted_vals))
+    plt.xlabel('time')
+    plt.ylabel('num of posts')
+    plt.title("Question 7: " +filename)
+    plt.show()
+
+def Question2(json_objects, filename):
+    hr2cnt = getTweetCount(json_objects)
+    keylist = getSortedKeys(hr2cnt)
+    generatePlot(hr2cnt, filename)
+
+Question2(json_objects, "Aggregated Data")
 parsed_features = featureExtractionCustomized(json_objects)
 train_labels_pair = convertDictToNumpy(parsed_features, feature_list_updated)
 pred_value = trainAndEvaluate(train_labels_pair,feature_list_updated)
