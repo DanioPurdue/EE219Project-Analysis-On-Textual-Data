@@ -27,6 +27,7 @@ filename = "updated_tweets_#gopatriots.txt"
 f_cnt = 1
 a_val = 66
 json_objects = list()
+top_three_features = [(-1, -1, -1), (-1, -1, -1), (-1, -1, -1)]
 with open(file_direct + filename, "r") as file:
     line = file.readline()
     while line:
@@ -163,7 +164,9 @@ def convertDictToNumpy(parsed_features, feature_list):
 
 def trainAndEvaluate(train_labels_pair, feature_list):
     # OLS Top three features and P values
-    x_train = np.squeeze(sm.add_constant(train_labels_pair["features"]))
+    global top_three_features
+    # x_train = np.squeeze(sm.add_constant(train_labels_pair["features"]))
+    x_train = np.squeeze(train_labels_pair["features"])
     y_train = np.squeeze(train_labels_pair["labels"])
     ols = sm.OLS(y_train, x_train)
     res_vals = ols.fit()
@@ -175,9 +178,11 @@ def trainAndEvaluate(train_labels_pair, feature_list):
     for i in range(res_vals.pvalues.shape[0]):
         pair = (res_vals.pvalues[i], i)
         idx_pvals_pair.append(pair)
-    idx_pvals_pair = sorted(idx_pvals_pair, key=lambda x: 666 if x[1] == 0 else x[0])
+    idx_pvals_pair = sorted(idx_pvals_pair, key=lambda x: x[0])
+    print('idx_pvals_pair: ', idx_pvals_pair)
     print("Top three features")
     for i in range(3):
+        top_three_features[i] = (feature_list[idx_pvals_pair[i][1]], idx_pvals_pair[i][1], res_vals.params[idx_pvals_pair[i][1]])
         print("feature:", feature_list[idx_pvals_pair[i][1]], ", P value:", idx_pvals_pair[i][0])
     print ("summary: ", res_vals.summary())
     return pred_vals
@@ -258,21 +263,25 @@ pred_value = trainAndEvaluate(train_labels_pair,feature_list_updated)
 
 
 print ("================================  Question 5  ==========================")
-def drawScatterPlots(feature_value, predicted_Y, message):
+def drawScatterPlots(feature_value, predicted_Y, coef , message):
     global f_cnt
     #Fitted values against true values
+    print ("Coefficeint: ", coef)
     fig, ax = plt.subplots()
-    ax.scatter(x=feature_value, y= predicted_Y)
+    coef_y_vals = [ coef*x for x in feature_value]
+    ax.scatter(x=feature_value, y = coef_y_vals)
+    ax.scatter(x=feature_value, y = predicted_Y)
+    
     ax.set_xlabel('Feature values')
     ax.set_ylabel('Predicted values')
     plt.title(message)
     plt.figure(f_cnt)
     f_cnt = f_cnt + 1
 
-
-drawScatterPlots(train_labels_pair["features"][:,4], pred_value, "Question 5: feature 1 " + filename)
-drawScatterPlots(train_labels_pair["features"][:,6], pred_value, "Question 5: feature 2 " + filename)
-drawScatterPlots(train_labels_pair["features"][:,7], pred_value, "Question 5: feature 3 " + filename)
+# TODO: this plot is not top three features
+drawScatterPlots(train_labels_pair["features"][:,top_three_features[0][1]], pred_value, top_three_features[0][2], "Question 5: " + top_three_features[0][0])
+drawScatterPlots(train_labels_pair["features"][:,top_three_features[1][1]], pred_value, top_three_features[1][2], "Question 5: " + top_three_features[1][0])
+drawScatterPlots(train_labels_pair["features"][:,top_three_features[2][1]], pred_value, top_three_features[2][2], "Question 5: " + top_three_features[2][0])
 
 print ("================================  Question 6  ==========================")
 def createTime(year, month, date, hour, minute=0, second=0):
@@ -374,18 +383,24 @@ def hasEmoticon(emoji_list, tweet_text):
             return True
     return False
 
-
+print ("++++++++++++++++++++++++  Before Start Time  ++++++++++++++++++++++++")
 parsed_features_first_period = featureExtractionCustomized(first_period_json)
 train_labels_pair_first_period = convertDictToNumpy(parsed_features_first_period, feature_list_updated)
 pred_value_first_period = trainAndEvaluate(train_labels_pair_first_period,feature_list_updated)
 
+print ("++++++++++++++++++++++++  Between Start and End Time  ++++++++++++++++++++++++")
 parsed_features_second_period = featureExtractionCustomizedFiveMinutes(second_period_json)
 train_labels_pair_second_period = convertDictToNumpy(parsed_features_second_period, feature_list_updated)
 pred_value_second_period = trainAndEvaluate(train_labels_pair_second_period,feature_list_updated)
 
+print ("++++++++++++++++++++++++  After End Time ++++++++++++++++++++++++")
 parsed_features_third_period = featureExtractionCustomized(third_period_json)
 train_labels_pair_third_period = convertDictToNumpy(parsed_features_third_period, feature_list_updated)
 pred_value_third_period = trainAndEvaluate(train_labels_pair_third_period,feature_list_updated)
 
+print ("++++++++++++++++++++++++  Entire Dataset ++++++++++++++++++++++++")
+parsed_features_third_period = featureExtractionCustomized(json_objects)
+train_labels_pair_third_period = convertDictToNumpy(parsed_features_third_period, feature_list_updated)
+pred_value_third_period = trainAndEvaluate(train_labels_pair_third_period,feature_list_updated)
 # show the plot
 plt.show()
