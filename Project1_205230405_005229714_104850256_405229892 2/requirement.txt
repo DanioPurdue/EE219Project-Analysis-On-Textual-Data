@@ -1,8 +1,0 @@
-warnings
-numpy
-random
-sklearn
-nltk
-pandas
-shutil
-tempfile
