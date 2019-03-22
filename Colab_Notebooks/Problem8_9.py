@@ -24,8 +24,8 @@ from sklearn.model_selection import KFold
 
 # matplotlib.use('TKAgg')
 file_direct = "ECE219_tweet_data_updated/"
-filenames = ["updated_tweets_#gohawks.txt", 
-            "updated_tweets_#gopatriots.txt", 
+filenames = ["updated_tweets_#gohawks.txt",
+            "updated_tweets_#gopatriots.txt",
             "updated_tweets_#nfl.txt",
             "updated_tweets_#patriots.txt",
             "updated_tweets_#sb49.txt",
@@ -49,7 +49,7 @@ def featureExtractionCustomized(json_objects):
     hr2feature = dict()
     happy_emoji = [":)", ":-)", ":')", ":]", "=]", ":)"]
     sad_emoji = [":-(", ":'(", ":[", "=["]
-    
+
     for i in range(len(json_objects)):
         parsed_time = creationTimeParser(json_objects[i]['citation_date'])
         tweet_text = json_objects[i]['text']
@@ -71,12 +71,12 @@ def featureExtractionCustomized(json_objects):
             hr2feature[parsed_time]["sad_emoji_cnt"] = 0
             hr2feature[parsed_time]["user_mentioned_cnt"] = json_objects[i]['user_mentioned_cnt']
             hr2feature[parsed_time]["url_cnt"] = json_objects[i]['url_cnt']
-        
+
         if hasEmoticon(happy_emoji, tweet_text):
             hr2feature[parsed_time]["happy_emoji_cnt"] += 1
         if hasEmoticon(sad_emoji, tweet_text):
             hr2feature[parsed_time]["sad_emoji_cnt"] += 1
-            
+
     min_time = min(hr2feature.keys())
     max_time = max(hr2feature.keys())
     hour_time = min_time + timedelta(hours=1)
@@ -92,7 +92,7 @@ def featureExtractionCustomized(json_objects):
             hr2feature[hour_time]["happy_emoji_cnt"] = 0
             hr2feature[hour_time]["user_mentioned_cnt"] = 0
             hr2feature[hour_time]["url_cnt"] = 0
-            
+
         hour_time += timedelta(hours=1)
     return hr2feature
 
@@ -126,16 +126,16 @@ print ("json length: ", len(json_objects))
 print (" Extract feature ")
 parsed_features = featureExtractionCustomized(json_objects)
 print (" Get Numpy Data ")
-feature_list_updated = ['hr_of_day', 'max_followers', 
-                        'num_followers', 'num_retweets', 
-                        'happy_emoji_cnt', 'sad_emoji_cnt', 
+feature_list_updated = ['hr_of_day', 'max_followers',
+                        'num_followers', 'num_retweets',
+                        'happy_emoji_cnt', 'sad_emoji_cnt',
                         'user_mentioned_cnt', 'url_cnt',
                         'num_tweets' ,'next_num_tweets']
 train_labels_pair = convertDictToNumpy(parsed_features, feature_list_updated)
 parameters = {'max_depth': [10, 20, 40, 60, 80, 100, 200, None], 
-'max_features': ['auto', 'sqrt'], 
-'min_samples_leaf': [1, 2, 4], 
-'min_samples_split': [2, 5, 10], 
+'max_features': ['auto', 'sqrt'],
+'min_samples_leaf': [1, 2, 4],
+'min_samples_split': [2, 5, 10],
 'n_estimators': [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]}
 
 print ("--------------Random Forest Regressor------------")
