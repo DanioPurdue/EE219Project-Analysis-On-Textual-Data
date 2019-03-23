@@ -204,10 +204,15 @@ def splitTweetByTimePeriodList(json_objects, datatime_start, datatime_end):
 
 
 def GridSearchNeuralNetwork(train_X, train_Y):
-    # parameters = {'hidden_layer_sizes': [(5),(6),(7),(8),(5,5),(5,6),(5,7),(6,5),(6,6),(6,7),(7,5),(7,6),(7,7),(7,8),(8,7),(8,8),(5,5,6),(5,5,8),(7,7,8),(8,7,7)]}
-    parameters = {'hidden_layer_sizes': [(5),(6),(7),(8)],
-                'learning_rate_init': [0.01]
-    }
+    parameters = {'hidden_layer_sizes': [(5),(6),(7),(8),(10),(20),(40),(50),
+                                    	(5,5),(5,6),(5,8),(5,10),
+                                    	(7,6),(7,8),(7,10),(7,20),
+                                    	(10,20),(10,40),(10,50),
+                                    	(20,40),(20,50),(40,50),
+                                    	(5,7,8),(5,8,10),
+                                    	(10,20,50),(20,40,50)],
+            	'learning_rate_init': [0.01]
+                ｝
     mlp = MLPRegressor(random_state=42, max_iter = 50000)
     grid_search = GridSearchCV(mlp, param_grid=parameters, cv=KFold(5, shuffle=True, random_state=42), scoring='neg_mean_squared_error', n_jobs=4)
     grid_search.fit(train_X, train_Y)

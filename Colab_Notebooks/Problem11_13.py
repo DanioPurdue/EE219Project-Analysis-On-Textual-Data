@@ -48,35 +48,35 @@ for file_single in filenames:
     getJsonObjectsAggregate(file_single, json_objects)
 print ("json length: ", len(json_objects))
 print (" Extract feature ")
-# parsed_features = featureExtractionCustomized(json_objects)
+parsed_features = featureExtractionCustomized(json_objects)
 print (" Get Numpy Data ")
 feature_list_updated = ['hr_of_day', 'max_followers',
                         'num_followers', 'num_retweets',
                         'happy_emoji_cnt', 'sad_emoji_cnt',
                         'user_mentioned_cnt', 'url_cnt',
                         'num_tweets' ,'next_num_tweets']
+train_labels_pair = convertDictToNumpy(parsed_features, feature_list_updated)
+
+
+print ("--------------Question 11: Neural Network------------")
+# parsed_features = featureExtractionCustomized(json_aggregate)
 # train_labels_pair = convertDictToNumpy(parsed_features, feature_list_updated)
-#
-#
-# print ("--------------Question 11: Neural Network------------")
-# # parsed_features = featureExtractionCustomized(json_aggregate)
-# # train_labels_pair = convertDictToNumpy(parsed_features, feature_list_updated)
+train_X = train_labels_pair["features"]
+train_Y = train_labels_pair["labels"]
+train_Y = np.ravel(train_Y)
+GridSearchNeuralNetwork(train_X, train_Y)
+
+print ("--------------Question 12: Neural Network + Standardization------------")
+scaler = StandardScaler()
+
+# parsed_features = featureExtractionCustomized(json_aggregate)
+# train_labels_pair = convertDictToNumpy(parsed_features, feature_list_updated)
 # train_X = train_labels_pair["features"]
 # train_Y = train_labels_pair["labels"]
+train_X = scaler.fit_transform(train_X)
+# train_Y = scaler.fit_transform(train_Y)
 # train_Y = np.ravel(train_Y)
-# GridSearchNeuralNetwork(train_X, train_Y)
-#
-# print ("--------------Question 12: Neural Network + Standardization------------")
-scaler = StandardScaler()
-#
-# # parsed_features = featureExtractionCustomized(json_aggregate)
-# # train_labels_pair = convertDictToNumpy(parsed_features, feature_list_updated)
-# # train_X = train_labels_pair["features"]
-# # train_Y = train_labels_pair["labels"]
-# train_X = scaler.fit_transform(train_X)
-# # train_Y = scaler.fit_transform(train_Y)
-# # train_Y = np.ravel(train_Y)
-# GridSearchNeuralNetwork(train_X, train_Y)
+GridSearchNeuralNetwork(train_X, train_Y)
 
 print ("--------------Question 13: Neural Network + Standardization For each period------------")
 
